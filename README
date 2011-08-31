@@ -1,0 +1,4 @@
+README
+
+Parses a truncated binary in Erlangs external format.
+trunkBin:parse/1 takes a list: [131, ...] or a binary: <<131, ...>>.
