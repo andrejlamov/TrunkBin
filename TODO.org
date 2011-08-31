@@ -1,0 +1,2 @@
+* TODO Improve string parsing
+* TODO Fix the empty list when parsing a non truncated binary
