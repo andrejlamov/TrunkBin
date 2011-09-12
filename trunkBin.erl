@@ -2,14 +2,8 @@
 -include_lib("eunit/include/eunit.hrl").
 -export([parse/1]).
 
-%%% This module makes it possible to read trunketed external terms with no compression. 
-%%%       
-
-
-%%% parse() 
-%%% 
-%%% Parses both trunkated binaries and lists with binary values (i.e. binary_to_list).
-%%%
+%%% This module makes it possible to read truncated terms using erlangs external format.
+%%% That is, using term_to_binary on truncated binaries looking like <<131,...>>>      
 
 parse(Trunk) when is_list(Trunk) ->
     parse(list_to_binary(Trunk));
@@ -20,11 +14,6 @@ parse(<<131, Rest/binary>>) ->
 	{Term,<<>>} ->
 	    Term
     end.
-
-%%% getTerm()
-%%%
-%%% Parses ext terms.
-%%%
 
 %% smallInt
 getTerm(<<97, Value, Rest/binary>>) ->
@@ -85,7 +74,7 @@ getTerm(<<114, Len:16, 100, NodeLen:16, _Node:NodeLen/binary,
     <<_ID:NewLen/binary, Rest/binary>> = Data,
     {'_parser: NEWREF', Rest};
 
-%% terms that can not be parsed
+%% unknown
 getTerm(Unknown) ->
     <<Tag, _Rest/binary>> = Unknown,
     TrunkTag = 
@@ -106,11 +95,6 @@ getTerm(Unknown) ->
 	    _Other -> "TRUNK"
 	end,
     {list_to_atom("_TRUNKATED_" ++ TrunkTag), <<>>}.
-
-%%% trav() 
-%%%
-%%% Goes through structures (i.e. tuples and lists).
-%%%
 
 trav(Binary, Arity, Type) ->
     trav(Binary, Arity, [], Type).
@@ -145,8 +129,7 @@ trav(Binary, Arity, GlobAcc, Type) ->
 	    trav(Rest, Arity - 1, GlobAcc ++ [Term], Type)
     end.
 
-%%% Simple eunit tests
-%%%
+%%% eunit tests
 %%%
 
 getTerm_test_() -> 
